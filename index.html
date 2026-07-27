@@ -1099,34 +1099,141 @@ function addMessage(text, sender) {
 
 addMessage('¡Hola! Soy tu asistente del SEGULAB. ¿Tienes alguna pregunta sobre el laboratorio de seguridad ciudadana?', 'bot');
 
-function generateBotResponse(userInput) {
-  const input = userInput.toLowerCase();
+// ============ BASE DE CONOCIMIENTO SEGULAB ============
+// Ampliada a partir de: Fichas 1-4, Nota SEGULAB, Propuesta SEGULAB (03/04/2026)
+// y Proyecto SEGULAB (0512013). Cada entrada tiene palabras clave y una
+// respuesta. matchTopic() puntúa todas las entradas por coincidencia de
+// palabras clave y devuelve la de mayor puntaje (las frases más específicas
+// pesan más). Para ampliar el conocimiento del bot basta con agregar nuevos
+// objetos a KNOWLEDGE_BASE.
+const KNOWLEDGE_BASE = [
+  {
+    id: 'definicion',
+    keywords: ['qué es', 'que es', 'definición', 'definicion', 'segulab es', 'significa'],
+    answer: 'El SEGULAB (Laboratorio de Seguridad Ciudadana) es un sistema dinámico de registro para medir y correlacionar variables asociadas a la seguridad personal, urbana y comunitaria en una zona poblacional específica. Es una respuesta fundamentada en evidencia internacional sobre cómo la participación ciudadana en seguridad incide en la percepción de inseguridad.\n\nNo es un enfoque sancionador: supera el modelo tradicional reactivo y punitivo, actuando antes de que ocurran los delitos y abordando sus causas estructurales. Es preventivo y participativo: integra a la ciudadanía como protagonista activa, co-produciendo seguridad entre instituciones y comunidades.'
+  },
+  {
+    id: 'pilares',
+    keywords: ['pilares', 'pilar', 'tres pilares', '3 pilares', 'fundamentos'],
+    answer: 'El SEGULAB se basa en tres pilares fundamentales:\n\n1. Enfoque de laboratorio - Experimentación controlada y aprendizaje continuo: ciclos iterativos (diseño → implementación → evaluación → rediseño), adaptación local, prueba y error supervisado, integración de múltiples perspectivas.\n\n2. Ciencia de datos aplicada - Cuatro componentes tecnológicos: Sistema de Información Georreferenciada (SIG), Observatorio de seguridad, Sistema de alerta temprana y Visualización interactiva.\n\n3. Gestión del cambio - Cuatro estrategias: sensibilización comunitaria, desarrollo de capacidades, proyectos de pequeña escala y mecanismos institucionales que aseguren su permanencia (3 a 6 años).'
+  },
+  {
+    id: 'ciclo',
+    keywords: ['ciclo', 'implementación', 'implementacion', 'fases', 'proceso cíclico', 'metodología', 'metodologia'],
+    answer: 'El ciclo de implementación del SEGULAB es un proceso cíclico y adaptativo con 5 fases interrelacionadas. Al concluir la quinta, el ciclo se reinicia incorporando los aprendizajes obtenidos:\n\n1. Diagnóstico - Comprensión integral del territorio: fenómenos delictivos, factores de riesgo/protección, capacidades locales y percepciones ciudadanas.\n2. Diseño - Co-creación de estrategias de intervención por equipos mixtos (comunidad, funcionarios, especialistas).\n3. Implementación - Acción concreta en el territorio, iniciando con "victorias tempranas" que generan confianza.\n4. Monitoreo y evaluación - Aprendizaje continuo y rendición de cuentas durante todo el ciclo, no solo al final.\n5. Sostenibilidad - Permanencia más allá de los periodos administrativos (horizonte de 3 a 6 años).'
+  },
+  {
+    id: 'diagnostico',
+    keywords: ['diagnóstico', 'diagnostico', 'delimitación territorial', 'mapeo de actores', 'fase 1'],
+    answer: 'La fase de Diagnóstico es el primer paso del ciclo SEGULAB. Busca una comprensión integral de la problemática de seguridad del territorio mediante un proceso participativo desde las etapas iniciales. Sus pasos incluyen:\n\n1. Delimitación territorial y poblacional (según incidencia delictiva, sociodemografía, cohesión comunitaria y viabilidad operativa).\n2. Mapeo de actores clave (líderes formales e informales, instituciones).\n3. Recolección de información cuantitativa y cualitativa.\n\nEntregables: documento de delimitación, base de datos de actores y mapa de relaciones.'
+  },
+  {
+    id: 'diseno',
+    keywords: ['diseño', 'diseno', 'co-creación', 'co-diseño', 'fase 2', 'estrategias de intervención'],
+    answer: 'La fase de Diseño convierte los hallazgos del diagnóstico en estrategias de intervención específicas. Equipos mixtos formados por comunidad, funcionarios y especialistas co-diseñan soluciones adaptadas al contexto local, definiendo objetivos medibles (SMART) y resultados esperados a corto, mediano y largo plazo.'
+  },
+  {
+    id: 'implementacion_fase',
+    keywords: ['victorias tempranas', 'acción concreta', 'accion concreta', 'fase 3', 'ejecución de intervenciones'],
+    answer: 'La fase de Implementación materializa las estrategias diseñadas en acciones concretas en el territorio. La comunidad es protagonista activa, no espectadora. Se inicia de forma escalonada con "victorias tempranas" que generan confianza, antes de avanzar hacia acciones más complejas.'
+  },
+  {
+    id: 'sostenibilidad',
+    keywords: ['sostenibilidad', 'permanencia', 'comité de sostenibilidad', 'institucionalización', 'fase 5'],
+    answer: 'La fase de Sostenibilidad asegura que el SEGULAB persista más allá de los cambios de gobierno (horizonte de 3 a 6 años). Incluye:\n\n• Institucionalización progresiva de mecanismos participativos en normativas y presupuestos.\n• Transferencia de capacidades a actores locales.\n• Comité de sostenibilidad con representación diversa (enlaces institucionales, gestores comunitarios, aliados académicos, comunicadores y mentores de nuevos liderazgos).\n• Diversificación de fuentes de financiamiento y consolidación de alianzas.'
+  },
+  {
+    id: 'actores',
+    keywords: ['actores', 'actor', 'quiénes participan', 'quienes participan', 'roles', 'responsabilidades'],
+    answer: 'El SEGULAB articula seis tipos de actores:\n\n1. Gobierno municipal - Seguridad Pública, Prevención Social, Participación Ciudadana, Desarrollo Social y Obras Públicas.\n2. Gobierno estatal - Coordinación de Seguridad, Secretaría de Seguridad, Secretaría de Planeación y Participación Ciudadana, Fiscalía.\n3. Academia - Universidades y centros de investigación (UdeG, ITESO, CIESAS Occidente): diseño metodológico, análisis, capacitación, evaluación externa.\n4. Comunidad - Grupos focales, talleres, asambleas de validación.\n5. Consejo consultivo ciudadano - Órgano representativo elegido democráticamente.\n6. Sector privado y OSC - Alianzas estratégicas y responsabilidad social.\n\nTambién pueden participar instituciones federales (Secretariado Ejecutivo del SNSP, Guardia Nacional) mediante programas específicos.'
+  },
+  {
+    id: 'coordinacion',
+    keywords: ['coordinación interinstitucional', 'coordinacion interinstitucional', 'mesa técnica', 'comité directivo', 'convenios'],
+    answer: 'La coordinación interinstitucional del SEGULAB opera en varios niveles:\n\n• Mesa técnica interinstitucional (nivel territorial) - se reúne periódicamente (p. ej. quincenal) para planificar acciones y resolver obstáculos operativos.\n• Comité directivo del SEGULAB (nivel municipal/regional) - decisión estratégica, reuniones trimestrales, validación de planes y asignación de recursos.\n• Convenios específicos de colaboración - instrumentos jurídicos que formalizan compromisos entre el SEGULAB y cada institución participante.'
+  },
+  {
+    id: 'contexto_jalisco',
+    keywords: ['contexto', 'jalisco', 'por qué segulab', 'por que segulab', 'diagnóstico de seguridad', 'homicidios', 'percepción de inseguridad'],
+    answer: 'Contexto de seguridad en Jalisco:\n\n• Tasa de homicidios (2024): 20.39 por 100 mil habitantes, con tendencia descendente sostenida.\n• 60.9% de la población considera la inseguridad el problema más importante del estado.\n• 75% manifiesta desconfianza hacia los cuerpos policiales locales.\n\nConcentración delictiva en el Área Metropolitana de Guadalajara: Guadalajara (33.9%, 15,683 carpetas), Zapopan (21.1%, 9,761 carpetas) y San Pedro Tlaquepaque (15.0%, 6,926 carpetas).\n\nPercepción de inseguridad: Nacional 74.6%, AMG 57%, Jalisco (18+ años) 37.7%. Esta percepción restringe la movilidad y el uso del espacio público incluso cuando los delitos no aumentan.'
+  },
+  {
+    id: 'problemas_identificados',
+    keywords: ['problemas identificados', 'justifican el segulab', 'desconexión institucional', 'baja confianza', 'información inaccesible'],
+    answer: 'Problemas que justifican al SEGULAB en Jalisco:\n\n• Falta de educación ciudadana - ausencia de formación cívica sobre seguridad y derechos.\n• Desconexión institucional - no existen estrategias claras de vinculación entre instituciones y comunidades.\n• Información inaccesible - la ciudadanía carece de acceso a información comprensible sobre las acciones de seguridad.\n• Baja confianza institucional - el 75% desconfía de los cuerpos policiales, lo que inhibe la denuncia y la colaboración.'
+  },
+  {
+    id: 'indicadores',
+    keywords: ['indicadores', 'éxito', 'exito', 'kpi', 'medición de impacto', 'medicion de impacto'],
+    answer: 'El SEGULAB mide su impacto con indicadores SMART en tres niveles:\n\n1. Indicadores de proceso - participación ciudadana (número de participantes, retención, representatividad, escala de Arnstein), coordinación interinstitucional (instituciones vinculadas, cumplimiento de compromisos) e implementación (porcentaje de actividades y recursos ejercidos).\n\n2. Indicadores de resultado - variación en tasas de incidencia delictiva, cambios en patrones espaciales/temporales, cambios en percepción de inseguridad y disposición a denunciar.\n\n3. Indicadores de impacto - reducción sostenida de tasas delictivas (3+ años), fortalecimiento del tejido social, institucionalización de mecanismos participativos y mejora en la coordinación interinstitucional.'
+  },
+  {
+    id: 'monitoreo',
+    keywords: ['monitoreo', 'evaluación', 'evaluacion', 'seguimiento', 'línea base', 'linea base', 'rendición de cuentas'],
+    answer: 'El sistema de Monitoreo y Evaluación es transversal a todo el ciclo, no solo al final. Sus pasos incluyen: diseño participativo del sistema, establecimiento de línea base, monitoreo continuo, evaluación de procesos y de resultados, evaluación de impacto cuando sea viable, socialización de hallazgos con la comunidad, documentación de aprendizajes y ajuste continuo de las intervenciones. Fortalece la transparencia, la rendición de cuentas y el aprendizaje colectivo.'
+  },
+  {
+    id: 'tecnologia',
+    keywords: ['tecnología', 'tecnologia', 'datos', 'sig', 'georreferenciada', 'observatorio', 'alerta temprana', 'plataforma'],
+    answer: 'El SEGULAB integra cuatro componentes tecnológicos (Pilar 2: Ciencia de datos aplicada):\n\n1. Sistema de Información Georreferenciada (SIG) - visualiza la distribución espacial y temporal de los fenómenos delictivos.\n2. Observatorio de seguridad - integra y analiza datos de múltiples fuentes, genera reportes periódicos.\n3. Sistema de alerta temprana - identifica cambios significativos en patrones delictivos o en la percepción de inseguridad.\n4. Visualización interactiva - facilita la comprensión y apropiación de la información por actores institucionales y ciudadanos.'
+  },
+  {
+    id: 'participacion',
+    keywords: ['participación', 'participacion', 'comunidad', 'ciudadana', 'sensibilización comunitaria'],
+    answer: 'La participación ciudadana es central en el SEGULAB y se promueve mediante:\n\n• Grupos focales y talleres participativos.\n• Asambleas de validación.\n• Consejo consultivo ciudadano elegido democráticamente.\n• Sensibilización comunitaria (diálogo, intercambio de experiencias, identificación de liderazgos locales).\n• Desarrollo de capacidades para funcionarios y líderes comunitarios.\n• Proyectos de pequeña escala que generan evidencia temprana.\n\nSe valora con la escala de Arnstein adaptada: información, consulta, decisión y control.'
+  },
+  {
+    id: 'normativa',
+    keywords: ['normativo', 'normativa', 'marco legal', 'ley', 'constitución', 'constitucion', 'plan estatal', 'respaldo normativo'],
+    answer: 'El SEGULAB tiene respaldo normativo y de planeación: está alineado con la Estrategia E1.2.2.1 del Plan Estatal de Desarrollo y Gobernanza 2024-2030 de Jalisco, y se sustenta en la Constitución Política de los Estados Unidos Mexicanos (Art. 21), la Ley General del Sistema Nacional de Seguridad Pública y la Ley General para la Prevención Social de la Violencia y la Delincuencia.'
+  },
+  {
+    id: 'referentes',
+    keywords: ['referentes', 'internacional', 'internacionales', 'medellín', 'medellin', 'montevideo', 'bid', 'experiencias'],
+    answer: 'El SEGULAB se fundamenta en referentes internacionales exitosos que demuestran que el enfoque preventivo y participativo genera mejores resultados que los modelos exclusivamente reactivos: Medellín (Colombia), Montevideo (Uruguay), evidencia del BID y estándares internacionales de seguridad ciudadana.'
+  },
+  {
+    id: 'financiamiento',
+    keywords: ['financiamiento', 'recursos', 'presupuesto', 'fuentes de financiamiento'],
+    answer: 'La sostenibilidad financiera del SEGULAB se busca mediante la diversificación de fuentes: recursos públicos de distintos niveles de gobierno, aportaciones comunitarias (monetarias y no monetarias), alianzas con el sector privado y, potencialmente, cooperación internacional.'
+  },
+  {
+    id: 'saludo',
+    keywords: ['hola', 'buenas', 'buenos días', 'buenos dias', 'buenas tardes', 'qué tal', 'que tal'],
+    answer: '¡Hola! Soy tu asistente del SEGULAB. Puedo contarte sobre su definición, los 3 pilares, el ciclo de 5 fases, los actores involucrados, el contexto en Jalisco, los indicadores de éxito, la tecnología que usa y la participación ciudadana. ¿Sobre qué te gustaría saber más?'
+  },
+  {
+    id: 'gracias',
+    keywords: ['gracias', 'muchas gracias', 'thank you'],
+    answer: '¡Con gusto! Si tienes otra duda sobre el SEGULAB, aquí estoy.'
+  }
+];
 
-  if (input.includes('qué es') || input.includes('definición') || input.includes('segulab')) {
-    return 'El SEGULAB es un sistema dinámico de registro para medir y correlacionar variables de seguridad personal, urbana y comunitaria en una zona poblacional específica. Es una respuesta fundamentada en evidencia internacional que reconoce que la participación ciudadana en seguridad incide directamente en la percepción de inseguridad.';
+const FALLBACK_RESPONSE = 'No tengo información específica sobre eso. Puedo ayudarte con preguntas sobre: qué es el SEGULAB, los 3 pilares, el ciclo de implementación (diagnóstico, diseño, implementación, monitoreo, sostenibilidad), actores involucrados, coordinación interinstitucional, contexto en Jalisco, indicadores de éxito, tecnología, participación ciudadana, marco normativo, referentes internacionales y financiamiento. ¿Hay algo más en lo que pueda ayudarte?';
+
+// Puntúa cada tema de la base de conocimiento contra el texto del usuario y
+// devuelve la respuesta del tema con más coincidencias (o el fallback si no
+// hay ninguna coincidencia). Para ampliar el conocimiento del bot basta con
+// agregar nuevos objetos a KNOWLEDGE_BASE.
+function matchTopic(userInput) {
+  const input = userInput.toLowerCase();
+  let best = null;
+  let bestScore = 0;
+  for (const topic of KNOWLEDGE_BASE) {
+    let score = 0;
+    for (const kw of topic.keywords) {
+      if (input.includes(kw)) score += kw.length; // frases más específicas pesan más
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      best = topic;
+    }
   }
-  if (input.includes('pilares') || input.includes('pilar')) {
-    return 'El SEGULAB se basa en tres pilares fundamentales:\n\n1. Enfoque de laboratorio - Experimentación controlada y aprendizaje continuo\n2. Ciencia de datos aplicada - Cuatro componentes tecnológicos integrados (SIG, Observatorio, Alerta temprana, Visualización)\n3. Gestión del cambio - Cuatro estrategias para transformar prácticas institucionales y comunitarias';
-  }
-  if (input.includes('ciclo') || input.includes('implementación') || input.includes('fases')) {
-    return 'El ciclo de implementación del SEGULAB tiene 5 fases:\n\n1. Diagnóstico - Análisis del contexto territorial\n2. Diseño - Definición de estrategias y soluciones\n3. Implementación - Ejecución de intervenciones\n4. Monitoreo - Seguimiento y evaluación continua\n5. Sostenibilidad - Institucionalización del laboratorio';
-  }
-  if (input.includes('actores') || input.includes('actor')) {
-    return 'El SEGULAB funciona con seis tipos de actores:\n\n1. Gobierno municipal\n2. Gobierno estatal\n3. Academia\n4. Comunidad\n5. Consejo consultivo ciudadano\n6. Sector privado y OSC\n\nCada actor juega un rol fundamental en el éxito del laboratorio.';
-  }
-  if (input.includes('contexto') || input.includes('jalisco')) {
-    return 'Jalisco enfrenta desafíos significativos de seguridad con concentración delictiva en municipios específicos. El SEGULAB se implementa como respuesta a estos problemas, promoviendo participación ciudadana y enfoque preventivo en territorios priorizados.';
-  }
-  if (input.includes('indicadores') || input.includes('éxito')) {
-    return 'El SEGULAB mide su impacto a través de tres niveles de indicadores:\n\n1. Indicadores de proceso - Miden la ejecución del SEGULAB en el territorio\n2. Indicadores de resultado - Cambios en comportamientos y prácticas\n3. Indicadores de impacto - Transformación en percepción de seguridad y confianza institucional';
-  }
-  if (input.includes('tecnología') || input.includes('datos') || input.includes('sig')) {
-    return 'El SEGULAB integra cuatro componentes tecnológicos:\n\n1. Sistema de información georreferenciada (SIG) - Visualiza distribución espacial de delitos\n2. Observatorio de seguridad - Integra datos de múltiples fuentes\n3. Sistema de alerta temprana - Identifica cambios en patrones\n4. Visualización interactiva - Facilita comprensión y apropiación de información';
-  }
-  if (input.includes('participación') || input.includes('comunidad') || input.includes('ciudadana')) {
-    return 'La participación ciudadana es central en el SEGULAB. Se promueve a través de:\n\n• Grupos focales y talleres participativos\n• Asambleas de validación\n• Consejo consultivo ciudadano elegido democráticamente\n• Sensibilización comunitaria\n• Desarrollo de capacidades locales';
-  }
-  return 'No tengo información específica sobre eso. Puedo ayudarte con preguntas sobre: qué es el SEGULAB, los 3 pilares, el ciclo de implementación, actores involucrados, contexto en Jalisco, indicadores de éxito, tecnología y participación ciudadana. ¿Hay algo más en lo que pueda ayudarte?';
+  return best ? best.answer : FALLBACK_RESPONSE;
+}
+
+function generateBotResponse(userInput) {
+  return matchTopic(userInput);
 }
 
 function sendMessage() {
@@ -1136,6 +1243,7 @@ function sendMessage() {
   chatInput.value = '';
   setTimeout(() => addMessage(generateBotResponse(value), 'bot'), 500);
 }
+
 
 chatFab.addEventListener('click', () => chatWindow.classList.toggle('open'));
 chatClose.addEventListener('click', () => chatWindow.classList.remove('open'));
