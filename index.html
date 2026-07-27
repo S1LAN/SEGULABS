@@ -1097,7 +1097,13 @@ function addMessage(text, sender) {
   msg.className = `msg ${sender}`;
   msg.textContent = text;
   chatBody.appendChild(msg);
-  chatBody.scrollTop = chatBody.scrollHeight;
+  if (sender === 'bot') {
+    // Deja ver el inicio de la respuesta del bot en vez de saltar hasta el final,
+    // para que las respuestas largas se lean desde el principio.
+    chatBody.scrollTop = msg.offsetTop - 8;
+  } else {
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
 }
 
 addMessage('¡Hola! Soy tu asistente del SEGULAB. ¿Tienes alguna pregunta sobre el laboratorio de seguridad ciudadana?', 'bot');
