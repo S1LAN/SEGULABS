@@ -1092,17 +1092,21 @@ const chatBody = document.getElementById('chatBody');
 const chatInput = document.getElementById('chatInput');
 const chatSend = document.getElementById('chatSend');
 
+let lastUserMsg = null;
+
 function addMessage(text, sender) {
   const msg = document.createElement('div');
   msg.className = `msg ${sender}`;
   msg.textContent = text;
   chatBody.appendChild(msg);
-  if (sender === 'bot') {
-    // Deja ver el inicio de la respuesta del bot en vez de saltar hasta el final,
-    // para que las respuestas largas se lean desde el principio.
-    chatBody.scrollTop = msg.offsetTop - 8;
-  } else {
+  if (sender === 'user') {
+    lastUserMsg = msg;
     chatBody.scrollTop = chatBody.scrollHeight;
+  } else {
+    // Muestra la pregunta del usuario arriba y el inicio de la respuesta del
+    // bot justo debajo, en vez de saltar hasta el final de la respuesta.
+    const anchor = lastUserMsg || msg;
+    chatBody.scrollTop = anchor.offsetTop - 8;
   }
 }
 
