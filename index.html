@@ -732,6 +732,7 @@ label.f-area { display: block; }
   body.print-fmt .fmt-head { margin-bottom: 0.5rem; padding-bottom: 0.5rem; }
   @page { margin: 13mm; }
 }
+.msg-note { display: block; margin-top: 0.45rem; font-size: 0.72rem; color: var(--text-muted); }
 </style>
 </head>
 <body>
@@ -2119,6 +2120,8 @@ function addMessage(text, sender) {
 //   related   ids de temas que se sugieren al final de la respuesta
 //   go        sección de la página a la que lleva el botón "Ver en la página"
 // Para ampliar el conocimiento del bot basta con agregar objetos a esta lista.
+// Además de estas palabras clave, el motor busca en el texto completo de las
+// respuestas y de la página (ver "MOTOR DE BÚSQUEDA" más abajo).
 const KNOWLEDGE_BASE = [
   // ---------- Qué es ----------
   {
@@ -3329,7 +3332,9 @@ Si eres vecina o vecino, también puedes acercarte al área de participación ci
   {
     id: 'identidad_bot', title: 'Sobre este asistente',
     keywords: ['quién eres', 'qué eres', 'eres un bot', 'eres una ia', 'eres humano', 'cómo te llamas', 'inteligencia artificial'],
-    answer: `Soy el asistente virtual del SEGULAB. Respondo con una base de conocimiento fija, elaborada a partir de las fichas oficiales, el manual de implementación y las leyes de Jalisco. No consulto internet ni datos en tiempo real, y no sustituyo la asesoría del área jurídica ni de la coordinación del proyecto.`,
+    answer: `Soy el asistente virtual del SEGULAB. Respondo con la información de este sitio: una base de temas elaborada a partir de las fichas oficiales, el manual de implementación y las leyes de Jalisco, más el contenido de las secciones de la página.
+
+Busco tu pregunta en esos textos y te muestro lo más pertinente. No consulto internet, no redacto respuestas nuevas y no sustituyo la asesoría del área jurídica ni de la coordinación del proyecto. Lo que escribes no sale de tu navegador.`,
     related: ['ayuda', 'fuentes']
   },
   {
@@ -3368,73 +3373,335 @@ Escribe tu pregunta o elige un tema.`,
 
 const TOPIC_BY_ID = Object.fromEntries(KNOWLEDGE_BASE.map((t) => [t.id, t]));
 
-const FALLBACK_RESPONSE = 'No encontré ese tema en mi base de conocimiento. Puedo orientarte sobre el proyecto y sus fases, el contexto de Jalisco, la capacitación del personal (sesión de 3 horas), las herramientas de campo, el marco normativo y los anexos, o los riesgos y la sostenibilidad. Prueba con otras palabras o elige un tema:';
-const FALLBACK_TOPICS = ['definicion', 'capacitacion_personal', 'herramientas', 'carpeta_normativa', 'riesgos'];
-const START_TOPICS = ['definicion', 'capacitacion_personal', 'herramientas', 'carpeta_normativa', 'protocolo_campo'];
+// ============ CONFIGURACIÓN DEL ASISTENTE ============
+const CHAT_CONFIG = {
+  fallback: 'No encontré información sobre eso. Puedo orientarte sobre el proyecto y sus fases, el contexto de Jalisco, la capacitación del personal, las herramientas de campo, las normas, los riesgos y los formatos. Prueba con otras palabras o elige un tema:',
+  fallbackTopics: ['definicion', 'capacitacion_personal', 'herramientas', 'carpeta_normativa', 'riesgos'],
+  startTopics: ['definicion', 'capacitacion_personal', 'herramientas', 'formatos', 'protocolo_campo'],
+  closeMatch: 'Esto es lo más cercano que encontré:',
+  maybe: 'No tengo una respuesta exacta. Quizá te sirva alguno de estos temas:',
+  // Palabras que usa la gente y que no aparecen en los textos: cada una suma
+  // a la búsqueda los términos que sí aparecen.
+  synonyms: {
+    lana: 'costo financiamiento', dinero: 'costo financiamiento', pagar: 'costo financiamiento', gratis: 'costo',
+    luz: 'luminarias alumbrado iluminacion', lampara: 'luminarias alumbrado', lamparas: 'luminarias alumbrado', foco: 'luminarias alumbrado', focos: 'luminarias alumbrado',
+    pleito: 'conflictos vecinales', pleitos: 'conflictos vecinales', pelea: 'riñas conflictos', peleas: 'riñas conflictos',
+    alcalde: 'administracion municipal', presidente: 'administracion municipal', eleccion: 'electoral', elecciones: 'electoral', veda: 'electoral',
+    foto: 'fotografias', fotos: 'fotografias', video: 'grabar', curso: 'capacitacion', taller: 'capacitacion', entrenamiento: 'capacitacion',
+    plantilla: 'formato', plantillas: 'formatos', machote: 'formato', pdf: 'imprimir formato', descargar: 'imprimir formato',
+    narco: 'crimen organizado', delincuencia: 'delitos', asalto: 'robo', asaltos: 'robos', droga: 'consumo', drogas: 'consumo',
+    policia: 'seguridad publica', policias: 'seguridad publica', chavos: 'jovenes', menores: 'adolescentes', ninos: 'adolescentes',
+    articulo: 'art', articulos: 'arts art', reunion: 'asamblea sesion', junta: 'asamblea sesion', permiso: 'consentimiento autorizacion', firmar: 'firma carta'
+  },
+  thresholds: { keyword: 8, close: 0.6, maybe: 0.34 },
+  // Conexión opcional a un modelo de IA mediante un servicio intermedio que
+  // guarde la clave. Con el endpoint vacío, el asistente trabaja solo con su
+  // base local y no envía nada fuera del navegador.
+  ai: { endpoint: '', maxPassages: 4, timeoutMs: 20000 },
+  aiNote: 'Respuesta generada con IA a partir de la información del sitio. Verifícala antes de usarla.',
+  thinking: 'Buscando...'
+};
 
-// Quita acentos, pasa a minúsculas y deja solo letras, números y espacios
-// (conserva el punto entre cifras, p. ej. "e1.2.2.1"), para que "¿Cómo?" y
-// "como" se traten igual.
+// ============ MOTOR DE BÚSQUEDA ============
+// 1) palabras clave; 2) búsqueda en el texto completo de las respuestas y de
+// la página, con raíces, sinónimos y tolerancia a errores de dedo;
+// 3) sugerencias si la coincidencia es parcial; 4) mensaje de respaldo.
+// ---------- Texto: normalización, palabras vacías y raíces ----------
+const STOP = new Set(('a al algo algun alguna algunas alguno algunos ante antes aqui asi aun aunque cada como con contra cual cuales ' +
+  'cuando de del desde donde dos el ella ellas ellos en entre era eran es esa esas ese eso esos esta estan estar estas este esto estos ' +
+  'fue fueron ha hace hacen hacer hacia han hasta hay la las le les lo los mas me mi mis mucho muy no nos o otra otro para pero por ' +
+  'porque pues que quien quienes se sea ser si sin sobre son su sus tambien tan te tiene tienen todo todos tu un una unas uno unos ' +
+  'y ya yo puedo puede pueden quiero quisiera necesito saber dime dame decir favor hola pasa pasar hago hacemos debo debe deben ' +
+  'tengo tenemos cuanto cuanta cuantos cuantas ver veo usar uso sirve sirven dice dicen').split(' '));
+
 function normalize(text) {
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9.]+/g, ' ')
-    .replace(/\.(?![0-9])/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return String(text).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9.]+/g, ' ').replace(/\.(?![0-9])/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-// Precompila una expresión por palabra clave. Las cortas (4 letras o menos)
-// deben coincidir como palabra completa, para que "sig" no se active con
-// "siguiente" ni "ley" con "leyenda". Las largas coinciden desde el inicio de
-// palabra, de modo que "capacitación" también reconoce "capacitaciones".
-const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-KNOWLEDGE_BASE.forEach((topic) => {
-  topic._kw = topic.keywords.map((raw) => {
-    // "palabra|3" fija un peso manual: sirve para palabras genéricas que no
-    // deben ganarle a un tema más específico.
-    const [kw, manual] = raw.split('|');
-    const n = normalize(kw);
-    const tail = n.length <= 4 ? '(?= |$)' : '';
-    const weight = manual ? Number(manual) : n.length * (n.includes(' ') ? 1.5 : 1);
-    return { re: new RegExp('(?:^| )' + escapeRe(n) + tail), weight };
-  });
-});
-
-// Puntúa cada tema contra el texto del usuario; las frases más largas y
-// específicas pesan más. Devuelve el tema ganador o null.
-function matchTopic(userInput) {
-  const input = normalize(userInput);
-  let best = null;
-  let bestScore = 0;
-  for (const topic of KNOWLEDGE_BASE) {
-    let score = 0;
-    for (const kw of topic._kw) {
-      if (kw.re.test(input)) score += kw.weight;
-    }
-    if (score > bestScore) {
-      bestScore = score;
-      best = topic;
-    }
+// Raíz aproximada en español: iguala "luminaria/luminarias", "reparar/reparan".
+const SUFFIXES = ['amientos', 'imientos', 'amiento', 'imiento', 'aciones', 'iciones', 'acion', 'icion', 'adores', 'adoras',
+  'adora', 'ador', 'mente', 'idades', 'idad', 'ables', 'ibles', 'able', 'ible', 'ando', 'iendo', 'aron', 'ieron',
+  'adas', 'ados', 'idas', 'idos', 'ada', 'ado', 'ida', 'ido', 'aba', 'an', 'en', 'ar', 'er', 'ir', 'es', 'as', 'os', 'a', 'o', 'e', 's'];
+function stem(word) {
+  if (word.length <= 4 || /\d/.test(word)) return word;
+  for (const s of SUFFIXES) {
+    if (word.endsWith(s) && word.length - s.length >= 4) return word.slice(0, -s.length);
   }
-  return best;
+  return word;
+}
+function tokenize(text) {
+  return normalize(text).split(' ').filter((w) => w.length > 1 && !STOP.has(w)).map(stem);
 }
 
-// Lleva a la sección de la página relacionada con un tema. En la guía de
-// campo, cada "bloque" corresponde a una sub-pestaña.
+// Distancia de edición acotada, para tolerar errores de dedo.
+function editDistance(a, b, max) {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    let rowMin = i;
+    for (let j = 1; j <= b.length; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (cur[j] < rowMin) rowMin = cur[j];
+    }
+    if (rowMin > max) return max + 1;
+    prev = cur;
+  }
+  return prev[b.length];
+}
+
+// ---------- Motor de búsqueda (sin dependencias del navegador) ----------
+function createEngine(config, knowledgeBase, pageDocs) {
+  const cfg = config;
+  const topicById = {};
+  knowledgeBase.forEach((t) => { topicById[t.id] = t; });
+
+  // Palabras clave precompiladas. Las cortas deben coincidir como palabra
+  // completa; las largas, desde el inicio de palabra.
+  const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const compiled = knowledgeBase.map((topic) => ({
+    topic,
+    kws: (topic.keywords || []).map((raw) => {
+      const parts = String(raw).split('|');
+      const n = normalize(parts[0]);
+      const tail = n.length <= 4 ? '(?= |$)' : '';
+      const weight = parts[1] ? Number(parts[1]) : n.length * (n.includes(' ') ? 1.5 : 1);
+      return { re: new RegExp('(?:^| )' + escapeRe(n) + tail), weight };
+    })
+  }));
+
+  // Documentos para la búsqueda en texto: cada tema y cada pasaje de la página.
+  const docs = [];
+  knowledgeBase.forEach((topic) => {
+    const kwText = (topic.keywords || []).map((k) => String(k).split('|')[0]).join(' ');
+    docs.push({
+      type: 'topic', topic, title: topic.title, raw: topic.answer,
+      tokens: [].concat(tokenize(topic.title), tokenize(topic.title), tokenize(topic.title),
+        tokenize(kwText), tokenize(kwText), tokenize(topic.answer))
+    });
+  });
+  (pageDocs || []).forEach((p) => {
+    docs.push({
+      type: 'page', title: p.title, raw: p.text, el: p.el,
+      tokens: [].concat(tokenize(p.title), tokenize(p.title), tokenize(p.text))
+    });
+  });
+
+  const df = {};
+  let totalLen = 0;
+  docs.forEach((d) => {
+    d.tf = {};
+    d.tokens.forEach((t) => { d.tf[t] = (d.tf[t] || 0) + 1; });
+    Object.keys(d.tf).forEach((t) => { df[t] = (df[t] || 0) + 1; });
+    totalLen += d.tokens.length;
+  });
+  const avgLen = docs.length ? totalLen / docs.length : 1;
+  const vocab = Object.keys(df);
+
+  function keywordScores(input) {
+    let best = null;
+    let bestScore = 0;
+    const all = {};
+    compiled.forEach(({ topic, kws }) => {
+      let score = 0;
+      kws.forEach((kw) => { if (kw.re.test(input)) score += kw.weight; });
+      all[topic.id] = score;
+      if (score > bestScore) { bestScore = score; best = topic; }
+    });
+    return { best, bestScore, all };
+  }
+
+  // Convierte la pregunta en raíces: quita palabras vacías, suma sinónimos
+  // y corrige errores de dedo contra el vocabulario conocido.
+  function queryTokens(question) {
+    const words = normalize(question).split(' ').filter((w) => w.length > 1 && !STOP.has(w));
+    const expanded = [];
+    words.forEach((w) => {
+      const syn = cfg.synonyms && (cfg.synonyms[w] || cfg.synonyms[stem(w)]);
+      // Si la palabra no existe en los textos y tiene sinónimos, se sustituye
+      // por ellos; si existe, los sinónimos se suman.
+      if (!syn || df[stem(w)]) expanded.push(w);
+      if (syn) normalize(syn).split(' ').forEach((s) => expanded.push(s));
+    });
+    const out = [];
+    const corrections = [];
+    expanded.forEach((w) => {
+      let t = stem(w);
+      if (!df[t] && t.length >= 6) {
+        const max = t.length >= 9 ? 2 : 1;
+        let found = null;
+        let foundD = max + 1;
+        for (const v of vocab) {
+          if (v[0] !== t[0]) continue;
+          const d = editDistance(t, v, max);
+          if (d < foundD) { foundD = d; found = v; }
+        }
+        if (found) { corrections.push(w + ' → ' + found); t = found; }
+      }
+      if (!out.includes(t)) out.push(t);
+    });
+    return { tokens: out, corrections };
+  }
+
+  // Relevancia BM25 de cada documento, más un refuerzo si además hubo palabras clave.
+  function textSearch(qTokens, kwAll) {
+    const N = docs.length;
+    const k1 = 1.4;
+    const b = 0.75;
+    const results = [];
+    // Las palabras raras pesan más que las comunes, también al medir qué
+    // parte de la pregunta quedó cubierta.
+    // Una palabra desconocida (posible error de dedo o tema ajeno) cuenta la mitad.
+    const idfOf = (t) => (df[t] ? Math.log(1 + (N - df[t] + 0.5) / (df[t] + 0.5)) : 0.5 * Math.log(1 + (N + 0.5) / 0.5));
+    const totalIdf = qTokens.reduce((sum, t) => sum + idfOf(t), 0) || 1;
+    docs.forEach((d) => {
+        let score = 0;
+        let covered = 0;
+        let hits = 0;
+        qTokens.forEach((t) => {
+          const f = d.tf[t];
+          if (!f) return;
+          const idf = idfOf(t);
+          covered += idf;
+      hits++;
+        score += idf * (f * (k1 + 1)) / (f + k1 * (1 - b + b * d.tokens.length / avgLen));
+      });
+      if (!covered) return;
+      if (d.type === 'topic' && kwAll[d.topic.id]) score += 0.4 * kwAll[d.topic.id];
+      if (d.type === 'page') score *= 0.9;
+      results.push({ doc: d, score, coverage: covered / totalIdf, hits });
+    });
+    results.sort((x, y) => y.score - x.score);
+    return results;
+  }
+
+  // Devuelve las líneas del texto que mejor responden a la pregunta.
+  function excerpt(raw, qTokens) {
+    if (raw.length <= 380) return raw;
+    const lines = [];
+    const ABBR = /(?:^|[\s(])(?:arts?|frs?|ej|p|pp|num|no|etc|vs)\.$/i;
+      raw.split(/\n+/).forEach((par) => {
+        let pending = '';
+        (par.match(/[^.!?]+[.!?]+(?=\s|$)|[^.!?]+$/g) || [par]).forEach((piece) => {
+          pending += piece;
+          if (ABBR.test(pending.trim())) return;
+          if (pending.trim()) lines.push(pending.trim());
+          pending = '';
+        });
+        if (pending.trim()) lines.push(pending.trim());
+    });
+    const scored = lines.map((line, i) => {
+      const lt = tokenize(line);
+      return { line, i, s: qTokens.filter((t) => lt.includes(t)).length };
+    });
+    const top = scored.filter((x) => x.s > 0).sort((x, y) => y.s - x.s || x.i - y.i).slice(0, 3).sort((x, y) => x.i - y.i);
+    if (!top.length) return raw.slice(0, 380) + '…';
+    return top.map((x) => x.line).join('\n');
+  }
+
+  function topicsFrom(ranked, n, skip) {
+    const out = [];
+    ranked.forEach((r) => {
+      if (r.doc.type === 'topic' && r.doc.topic !== skip && !out.includes(r.doc.topic.id) && out.length < n) out.push(r.doc.topic.id);
+    });
+    return out;
+  }
+
+  // Decide la respuesta. Devuelve un objeto con "kind":
+  //   topic  → respuesta completa de un tema
+  //   close  → fragmento más cercano (tema o pasaje de la página)
+  //   maybe  → solo sugerencias
+  //   none   → sin coincidencia
+  function decide(question) {
+    const input = normalize(question);
+    const th = cfg.thresholds;
+    const kw = keywordScores(input);
+    const q = queryTokens(question);
+    const rawWords = input ? input.split(' ').length : 0;
+    const ranked = q.tokens.length ? textSearch(q.tokens, kw.all) : [];
+    const debug = { input, tokens: q.tokens, corrections: q.corrections, keywordTopic: kw.best && kw.best.id, keywordScore: kw.bestScore,
+      ranked: ranked.slice(0, 5).map((r) => ({ title: r.doc.title, type: r.doc.type, score: +r.score.toFixed(2), coverage: +r.coverage.toFixed(2) })) };
+
+    if (kw.best && (kw.bestScore >= th.keyword || rawWords <= 2)) {
+      return { kind: 'topic', topic: kw.best, ranked, debug };
+    }
+    const top = ranked[0];
+      // Una sola palabra en común no basta cuando la pregunta tiene varias.
+      const solid = top && (top.hits >= 2 || q.tokens.length === 1);
+    if (top && solid && top.coverage >= th.close) {
+      if (top.doc.type === 'topic' && top.doc.topic === kw.best) return { kind: 'topic', topic: kw.best, ranked, debug };
+      return { kind: 'close', doc: top.doc, text: excerpt(top.doc.raw, q.tokens), suggestions: topicsFrom(ranked, 3, null), ranked, debug };
+    }
+    if (kw.best && kw.bestScore >= th.keyword / 2) return { kind: 'topic', topic: kw.best, ranked, debug };
+    if (top && top.coverage >= th.maybe) {
+      // Si lo más parecido es un pasaje de la página, se muestra ese pasaje;
+      // si son temas, se ofrecen como sugerencias.
+      if (top.doc.type === 'page') {
+        if (!solid) return { kind: 'none', ranked, debug };
+      return { kind: 'close', doc: top.doc, text: excerpt(top.doc.raw, q.tokens), suggestions: topicsFrom(ranked, 2, null), ranked, debug };
+      }
+      const sug = topicsFrom(ranked, 3, null);
+      if (sug.length) return { kind: 'maybe', suggestions: sug, ranked, debug };
+    }
+    return { kind: 'none', ranked, debug };
+  }
+
+  return { decide, topicById, normalize, tokenize };
+}
+
+
+// ---------- Lectura del contenido de la página ----------
+// Cada título con el texto que le sigue se vuelve un pasaje consultable.
+function readPage() {
+  const out = [];
+  document.querySelectorAll('main h2, main h3, main h4').forEach((h) => {
+    let text = '';
+    let el = h.nextElementSibling;
+    while (el && !/^H[1-4]$/.test(el.tagName) && text.length < 900) {
+      text += ' ' + el.textContent.replace(/\s+/g, ' ').trim();
+      el = el.nextElementSibling;
+    }
+    text = text.trim();
+    if (text.length < 40) return;
+    out.push({ title: h.textContent.replace(/\s+/g, ' ').trim(), text: text.slice(0, 900), el: h });
+  });
+  return out;
+}
+
+const chatEngine = createEngine(CHAT_CONFIG, KNOWLEDGE_BASE, readPage());
+
+// ---------- Navegación desde el chat ----------
+// En la guía de campo, cada "bloque" corresponde a una sub-pestaña.
 const FIELD_TABS = { 'bloque-1': 'sesion', 'bloque-2': 'campo', 'bloque-3': 'normas', 'bloque-4': 'riesgos', 'bloque-5': 'formatos' };
+function scrollToEl(el) {
+  setTimeout(() => {
+    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - headerOffset(), behavior: 'smooth' });
+  }, 380);
+}
 function goToPage(go) {
   activateSection(go.section);
   if (go.section === 'field' && FIELD_TABS[go.anchor]) {
     openFieldTab(FIELD_TABS[go.anchor], true);
   } else if (go.anchor) {
-    setTimeout(() => {
-      const el = document.getElementById(go.anchor);
-      if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - headerOffset(), behavior: 'smooth' });
-    }, 380);
+    const el = document.getElementById(go.anchor);
+    if (el) scrollToEl(el);
   }
+  if (window.innerWidth < 640) chatWindow.classList.remove('open');
+}
+// Lleva a un pasaje de la página: abre su sección, su sub-pestaña y, si está
+// dentro de un selector, la opción que lo contiene.
+function goToElement(el) {
+  const panel = el.closest('.section-panel');
+  if (panel) activateSection(panel.id.replace('section-', ''));
+  const fpanel = el.closest('.fpanel');
+  if (fpanel) openFieldTab(fpanel.id.replace('fpanel-', ''), false);
+  const item = el.closest('.pick-item');
+  if (item) {
+    const btn = item.closest('.picker').querySelector(`.pick-btn[data-pick="${item.dataset.item}"]`);
+    if (btn) btn.click();
+  }
+  scrollToEl(item || el);
   if (window.innerWidth < 640) chatWindow.classList.remove('open');
 }
 
@@ -3446,7 +3713,7 @@ function addActions(topicIds, go) {
     const link = document.createElement('button');
     link.className = 'chat-chip link';
     link.textContent = 'Ver en la página →';
-    link.addEventListener('click', () => goToPage(go));
+    link.addEventListener('click', () => (go instanceof Element ? goToElement(go) : goToPage(go)));
     row.appendChild(link);
   }
   (topicIds || []).forEach((id) => {
@@ -3457,21 +3724,67 @@ function addActions(topicIds, go) {
     chip.textContent = topic.title;
     chip.addEventListener('click', () => {
       addMessage(topic.title, 'user');
-      setTimeout(() => replyWith(topic), 350);
+      setTimeout(() => showTopic(topic), 350);
     });
     row.appendChild(chip);
   });
   if (row.children.length) chatBody.appendChild(row);
 }
 
-function replyWith(topic) {
-  if (!topic) {
-    addMessage(FALLBACK_RESPONSE, 'bot');
-    addActions(FALLBACK_TOPICS, null);
-    return;
-  }
+function showTopic(topic) {
   addMessage(topic.answer, 'bot');
   addActions(topic.related, topic.go);
+}
+
+function showLocal(result) {
+  if (result.kind === 'topic') return showTopic(result.topic);
+  if (result.kind === 'close') {
+    addMessage(CHAT_CONFIG.closeMatch + '\n\n' + result.doc.title + '\n' + result.text, 'bot');
+    return addActions(result.suggestions, result.doc.type === 'page' ? result.doc.el : result.doc.topic.go);
+  }
+  if (result.kind === 'maybe') {
+    addMessage(CHAT_CONFIG.maybe, 'bot');
+    return addActions(result.suggestions, null);
+  }
+  addMessage(CHAT_CONFIG.fallback, 'bot');
+  addActions(CHAT_CONFIG.fallbackTopics, null);
+}
+
+async function askAI(question, result) {
+  const context = result.ranked.slice(0, CHAT_CONFIG.ai.maxPassages).map((r) => ({ title: r.doc.title, text: r.doc.raw.slice(0, 1500) }));
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), CHAT_CONFIG.ai.timeoutMs);
+  try {
+    const res = await fetch(CHAT_CONFIG.ai.endpoint, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question, context }), signal: ctrl.signal
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    return (data && data.answer ? String(data.answer) : '').trim();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function respond(question) {
+  const result = chatEngine.decide(question);
+  if (result.kind === 'topic' || !CHAT_CONFIG.ai.endpoint) return showLocal(result);
+  const wait = addMessage(CHAT_CONFIG.thinking, 'bot');
+  try {
+    const answer = await askAI(question, result);
+    wait.remove();
+    if (!answer) return showLocal(result);
+    const msg = addMessage(answer, 'bot');
+    const note = document.createElement('small');
+    note.className = 'msg-note';
+    note.textContent = CHAT_CONFIG.aiNote;
+    msg.appendChild(note);
+    addActions(result.suggestions || [], null);
+  } catch (err) {
+    wait.remove();
+    showLocal(result);
+  }
 }
 
 function sendMessage() {
@@ -3479,11 +3792,11 @@ function sendMessage() {
   if (!value) return;
   addMessage(value, 'user');
   chatInput.value = '';
-  setTimeout(() => replyWith(matchTopic(value)), 450);
+  setTimeout(() => respond(value), 450);
 }
 
-addMessage('¡Hola! Soy el asistente del SEGULAB. Pregúntame sobre el laboratorio, la capacitación del personal, el trabajo en campo, el marco normativo o los riesgos. También puedes elegir un tema:', 'bot');
-addActions(START_TOPICS, null);
+addMessage('¡Hola! Soy el asistente del SEGULAB. Pregúntame con tus palabras sobre el laboratorio, la capacitación, el trabajo en campo, las normas, los riesgos o los formatos. También puedes elegir un tema:', 'bot');
+addActions(CHAT_CONFIG.startTopics, null);
 chatBody.scrollTop = 0;
 
 chatFab.addEventListener('click', () => chatWindow.classList.toggle('open'));
@@ -3492,6 +3805,9 @@ chatSend.addEventListener('click', sendMessage);
 chatInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') sendMessage();
 });
+
+// Diagnóstico desde la consola del navegador: segulabChat.explain('pregunta')
+window.segulabChat = { decide: (q) => chatEngine.decide(q), explain: (q) => chatEngine.decide(q).debug };
 
 </script>
 </body>
