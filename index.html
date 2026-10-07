@@ -47,6 +47,7 @@ body {
 img, svg { max-width: 100%; }
 
 a { color: inherit; }
+.go-link { font-weight: 600; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
 
 button { font-family: inherit; cursor: pointer; }
 
@@ -786,19 +787,7 @@ label.f-area { display: block; }
 
         <div class="box blue">
           <h3>Definición y propósito</h3>
-          <p>El SEGULAB (Laboratorio de Seguridad Ciudadana) es una respuesta fundamentada en evidencia internacional sobre cómo la participación ciudadana en seguridad apoya la política de seguridad. No es solo análisis de datos: es un proceso de cambio institucional y comunitario que diagnostica, co-diseña, prueba, mide y ajusta intervenciones junto con la comunidad.</p>
-          <div class="grid grid-2">
-            <div class="kpi-card green">
-              <div class="value">Preventivo</div>
-              <div class="label">Enfoque</div>
-              <div class="desc">No sancionador: actúa antes de que ocurran los delitos, sobre sus causas estructurales</div>
-            </div>
-            <div class="kpi-card mustard">
-              <div class="value">Cíclico</div>
-              <div class="label">Proceso</div>
-              <div class="desc">Iterativo, con aprendizaje continuo y la ciudadanía como co-productora</div>
-            </div>
-          </div>
+          <p style="margin:0;">El SEGULAB (Laboratorio de Seguridad Ciudadana) es una respuesta fundamentada en evidencia internacional sobre cómo la participación ciudadana en seguridad apoya la política de seguridad. No es solo análisis de datos: es un proceso de cambio institucional y comunitario que diagnostica, co-diseña, prueba, mide y ajusta intervenciones junto con la comunidad.</p>
         </div>
 
         <div>
@@ -806,15 +795,15 @@ label.f-area { display: block; }
           <div class="grid grid-2">
             <div class="card icon-card" style="border-left:4px solid var(--green)">
               <svg data-lucide="circle-check-big" style="color:var(--green)" width="24" height="24"></svg>
-              <div><h4>Enfoque preventivo</h4><p>No sancionador. Actúa antes de los delitos, abordando causas estructurales.</p></div>
+              <div><h4>Enfoque preventivo</h4><p>No sancionador: actúa antes de que ocurran los delitos, sobre sus causas estructurales.</p></div>
             </div>
             <div class="card icon-card" style="border-left:4px solid var(--primary)">
               <svg data-lucide="users" style="color:var(--primary)" width="24" height="24"></svg>
-              <div><h4>Participación ciudadana</h4><p>La seguridad se co-produce entre instituciones y comunidades, generando confianza y resultados sostenibles.</p></div>
+              <div><h4>Participación ciudadana</h4><p>La seguridad se co-produce entre instituciones y comunidades: la ciudadanía es co-productora, lo que genera confianza y resultados sostenibles.</p></div>
             </div>
             <div class="card icon-card" style="border-left:4px solid var(--purple)">
               <svg data-lucide="trending-up" style="color:var(--purple)" width="24" height="24"></svg>
-              <div><h4>Ciclos iterativos</h4><p>Aprendizaje continuo. Sin soluciones únicas, sino procesos de mejora permanente.</p></div>
+              <div><h4>Ciclos iterativos</h4><p>Proceso cíclico de aprendizaje continuo: sin soluciones únicas, sino mejora permanente.</p></div>
             </div>
             <div class="card icon-card" style="border-left:4px solid var(--amber)">
               <svg data-lucide="award" style="color:var(--amber)" width="24" height="24"></svg>
@@ -852,7 +841,7 @@ label.f-area { display: block; }
 
         <div class="box amber">
           <h3 style="color:#92400E;">Respaldo normativo y de planeación</h3>
-          <p style="margin:0;">El SEGULAB tiene sustento en la <strong>Ley de Cultura de Paz del Estado de Jalisco</strong>, la <strong>Ley de Planeación Participativa para el Estado de Jalisco y sus Municipios</strong>, la <strong>Ley del Sistema de Seguridad Pública para el Estado de Jalisco</strong> y la <strong>Ley de Prevención Social de la Violencia y la Delincuencia del Estado de Jalisco</strong>, y está previsto en el Plan Estatal de Desarrollo y Gobernanza 2024-2030 (estrategia E1.2.2.1). El detalle por ley está en la sección 06.</p>
+          <p style="margin:0;">El SEGULAB tiene sustento en la <strong>Ley de Cultura de Paz del Estado de Jalisco</strong>, la <strong>Ley de Planeación Participativa para el Estado de Jalisco y sus Municipios</strong>, la <strong>Ley del Sistema de Seguridad Pública para el Estado de Jalisco</strong> y la <strong>Ley de Prevención Social de la Violencia y la Delincuencia del Estado de Jalisco</strong>, y está previsto en el Plan Estatal de Desarrollo y Gobernanza 2024-2030 (estrategia E1.2.2.1). Para qué sirve cada una de estas leyes en la operación se explica en la <a href="#" class="go-link" data-go-section="practice" data-go-anchor="anchor-leyes">sección 06 «En la práctica», apartado «Para qué sirve cada ley en la operación»</a>.</p>
         </div>
 
         <div id="anchor-referentes">
@@ -961,9 +950,9 @@ label.f-area { display: block; }
         <div>
           <h3 class="section-title">Problemas identificados que justifican el SEGULAB</h3>
           <div class="grid grid-3">
-            <div class="card" style="border-left:4px solid var(--red)"><h4 style="margin:0 0 6px;">Falta de educación ciudadana</h4><p style="font-size:0.86rem;color:var(--text-muted);margin:0;">Ausencia de formación cívica sobre seguridad y derechos ciudadanos en la materia.</p></div>
+            <div class="card" style="border-left:4px solid var(--red)"><h4 style="margin:0 0 6px;">Educación ciudadana insuficiente</h4><p style="font-size:0.86rem;color:var(--text-muted);margin:0;">Formación cívica limitada sobre seguridad y derechos ciudadanos en la materia.</p></div>
             <div class="card" style="border-left:4px solid var(--red)"><h4 style="margin:0 0 6px;">Desconexión institucional</h4><p style="font-size:0.86rem;color:var(--text-muted);margin:0;">Sin vínculo claro con las comunidades: la confianza en la Policía Estatal bajó a 56.5% y 66.3% de las razones para no denunciar se atribuye a la autoridad.</p></div>
-            <div class="card" style="border-left:4px solid var(--red)"><h4 style="margin:0 0 6px;">Información inaccesible</h4><p style="font-size:0.86rem;color:var(--text-muted);margin:0;">La ciudadanía carece de acceso a información comprensible sobre las acciones de seguridad.</p></div>
+            <div class="card" style="border-left:4px solid var(--red)"><h4 style="margin:0 0 6px;">Información inaccesible</h4><p style="font-size:0.86rem;color:var(--text-muted);margin:0;">La ciudadanía tiene acceso limitado a información comprensible sobre las acciones de seguridad.</p></div>
             <div class="card" style="border-left:4px solid var(--red)"><h4 style="margin:0 0 6px;">Cifra negra persistente</h4><p style="font-size:0.86rem;color:var(--text-muted);margin:0;">El 92.2% de los delitos no se denunció o no tuvo carpeta (+0.5 pp). Solo 7.8% llegó a carpeta de investigación.</p></div>
             <div class="card" style="border-left:4px solid var(--red)"><h4 style="margin:0 0 6px;">Desaparición de personas</h4><p style="font-size:0.86rem;color:var(--text-muted);margin:0;">Fenómeno al alza que fractura el tejido social y acentúa la percepción de impunidad.</p></div>
             <div class="card" style="border-left:4px solid var(--red)"><h4 style="margin:0 0 6px;">Fragmentación de datos</h4><p style="font-size:0.86rem;color:var(--text-muted);margin:0;">Sistemas de datos dispersos entre instituciones dificultan análisis integrados y comparables.</p></div>
@@ -1020,7 +1009,7 @@ label.f-area { display: block; }
             <h4 style="margin:0 0 1rem;">Componentes tecnológicos</h4>
             <div class="grid grid-2">
               <div style="background:#FDECDC;border-radius:8px;padding:0.9rem;border-left:4px solid var(--mustard);"><h5 style="margin:0 0 4px;font-size:0.9rem;">Sistema de información georreferenciada (SIG)</h5><p style="margin:0;font-size:0.84rem;color:var(--text-muted)">Visualiza la distribución espacial y temporal de los fenómenos delictivos en el territorio.</p></div>
-              <div style="background:#FDECDC;border-radius:8px;padding:0.9rem;border-left:4px solid var(--mustard);"><h5 style="margin:0 0 4px;font-size:0.9rem;">Observatorio de seguridad</h5><p style="margin:0;font-size:0.84rem;color:var(--text-muted)">Integra y analiza datos de múltiples fuentes; genera reportes periódicos para la toma de decisiones.</p></div>
+              <div style="background:#FDECDC;border-radius:8px;padding:0.9rem;border-left:4px solid var(--mustard);"><h5 style="margin:0 0 4px;font-size:0.9rem;">Observatorio de seguridad</h5><p style="margin:0;font-size:0.84rem;color:var(--text-muted)">Integra y analiza datos de múltiples fuentes; genera reportes para la toma de decisiones: corte mensual para la Mesa Técnica y balance trimestral para el Comité Directivo y la comunidad (periodicidad propuesta).</p></div>
               <div style="background:#FDECDC;border-radius:8px;padding:0.9rem;border-left:4px solid var(--mustard);"><h5 style="margin:0 0 4px;font-size:0.9rem;">Sistema de alerta temprana</h5><p style="margin:0;font-size:0.84rem;color:var(--text-muted)">Identifica cambios significativos en patrones delictivos o en la percepción de inseguridad.</p></div>
               <div style="background:#FDECDC;border-radius:8px;padding:0.9rem;border-left:4px solid var(--mustard);"><h5 style="margin:0 0 4px;font-size:0.9rem;">Visualización interactiva</h5><p style="margin:0;font-size:0.84rem;color:var(--text-muted)">Facilita la comprensión y apropiación de la información por parte de actores institucionales y ciudadanos.</p></div>
             </div>
@@ -1038,9 +1027,9 @@ label.f-area { display: block; }
           <div class="card" style="border-left:4px solid var(--green);padding:1.6rem;">
             <h4 style="margin:0 0 1rem;">Estrategias de transformación</h4>
             <div class="grid grid-2">
-              <div style="background:#EAF6EA;border-radius:8px;padding:0.9rem;border-left:4px solid var(--green);"><h5 style="margin:0 0 4px;font-size:0.9rem;">Sensibilización comunitaria</h5><p style="margin:0;font-size:0.84rem;color:var(--text-muted)">Diálogo participativo, intercambio de experiencias e identificación de liderazgos locales.</p></div>
+              <div style="background:#EAF6EA;border-radius:8px;padding:0.9rem;border-left:4px solid var(--green);"><h5 style="margin:0 0 4px;font-size:0.9rem;">Recuperación de saberes comunitarios</h5><p style="margin:0;font-size:0.84rem;color:var(--text-muted)">Parte de lo que la ciudadanía ya ha aprendido de su entorno: diálogo participativo, intercambio de experiencias e identificación de liderazgos locales.</p></div>
               <div style="background:#EAF6EA;border-radius:8px;padding:0.9rem;border-left:4px solid var(--green);"><h5 style="margin:0 0 4px;font-size:0.9rem;">Desarrollo de capacidades</h5><p style="margin:0;font-size:0.84rem;color:var(--text-muted)">Programas de formación adaptados para funcionarios y líderes comunitarios (ver secciones 06 y 07).</p></div>
-              <div style="background:#EAF6EA;border-radius:8px;padding:0.9rem;border-left:4px solid var(--green);"><h5 style="margin:0 0 4px;font-size:0.9rem;">Proyectos de pequeña escala</h5><p style="margin:0;font-size:0.84rem;color:var(--text-muted)">Generan evidencia temprana sobre la efectividad de las intervenciones.</p></div>
+              <div style="background:#EAF6EA;border-radius:8px;padding:0.9rem;border-left:4px solid var(--green);"><h5 style="margin:0 0 4px;font-size:0.9rem;">Acupuntura urbana</h5><p style="margin:0;font-size:0.84rem;color:var(--text-muted)">Proyectos de pequeña escala en puntos precisos del barrio: generan evidencia temprana sobre la efectividad de las intervenciones.</p></div>
               <div style="background:#EAF6EA;border-radius:8px;padding:0.9rem;border-left:4px solid var(--green);"><h5 style="margin:0 0 4px;font-size:0.9rem;">Mecanismos institucionales</h5><p style="margin:0;font-size:0.84rem;color:var(--text-muted)">Aseguran la permanencia del SEGULAB más allá de los periodos administrativos (3 a 6 años).</p></div>
             </div>
           </div>
@@ -1082,7 +1071,7 @@ label.f-area { display: block; }
             <div class="phase-content" style="border-left-color:#F98B2F">
               <h4>Diseño</h4><p class="subtitle">Co-creación de estrategias de intervención</p>
               <p class="desc">Los hallazgos se convierten en estrategias de intervención específicas. Equipos mixtos de comunidad, funcionarios y especialistas co-diseñan y prototipan soluciones adaptadas al contexto local.</p>
-              <div class="deliverable"><strong>Entregable clave:</strong> Plan de intervención co-diseñado, con objetivos SMART y resultados esperados a corto, mediano y largo plazo.</div>
+              <div class="deliverable"><strong>Entregable clave:</strong> Plan de intervención co-diseñado, con objetivos SMART (específicos, medibles, alcanzables, relevantes y con plazo definido) y resultados esperados a corto, mediano y largo plazo.</div>
             </div>
           </div>
           <div class="phase-row">
@@ -1098,7 +1087,7 @@ label.f-area { display: block; }
             <div class="phase-content" style="border-left-color:#E53935">
               <h4>Monitoreo y evaluación</h4><p class="subtitle">Aprendizaje continuo y rendición de cuentas</p>
               <p class="desc">Sistema participativo integrado durante todo el ciclo, no solo al final. Verifica avances, valora resultados e impactos y genera aprendizajes. Fortalece la transparencia mediante indicadores de proceso, resultado e impacto.</p>
-              <div class="deliverable"><strong>Entregable clave:</strong> Reportes periódicos de indicadores, socializados y discutidos con la comunidad en espacios deliberativos.</div>
+              <div class="deliverable"><strong>Entregable clave:</strong> Reportes de indicadores (corte mensual y balance trimestral, periodicidad propuesta), socializados y discutidos con la comunidad en espacios deliberativos.</div>
             </div>
           </div>
           <div class="phase-row">
@@ -1259,7 +1248,7 @@ label.f-area { display: block; }
           </div>
         </div>
 
-        <div>
+        <div id="anchor-leyes">
           <h3 class="section-title">Para qué sirve cada ley en la operación</h3>
           <p class="section-lead">Marco normativo federal, estatal y de planeación. Los artículos que el personal debe llevar a campo se detallan en la sección 07.</p>
           <div class="grid grid-2">
@@ -1735,7 +1724,7 @@ label.f-area { display: block; }
           <div class="fmt-brand"><img class="fmt-mascot" alt="Mascota del SEGULAB" /><div><div class="fmt-word">SEGULAB</div><div class="fmt-sub">Laboratorio de Seguridad Ciudadana</div></div></div>
           <div class="fmt-id"><div class="fmt-code">F-07</div><div class="fmt-title">Ficha de prototipo de victoria temprana</div></div>
         </header>
-        <div class="fmt-body"><div class="f-row"><label class="f-field" style="flex:2"><span>Territorio</span><input type="text"></label><label class="f-field" style="flex:1"><span>Fecha</span><input type="text"></label><label class="f-field" style="flex:1"><span>Folio de la intervención</span><input type="text"></label></div><div class="f-row"><label class="f-field" style="flex:1"><span>Nombre de la intervención</span><input type="text"></label></div><div class="f-row"><label class="f-field" style="flex:2"><span>Problemática que atiende (n.º en F-06)</span><input type="text"></label><label class="f-field" style="flex:2"><span>Lugar (zona o tramo)</span><input type="text"></label></div><h5 class="f-sec">1. Hallazgo y dato</h5><label class="f-area"><span class="f-q">¿Qué señaló la comunidad y con qué herramienta?</span><textarea rows="2"></textarea></label><label class="f-area"><span class="f-q">¿Qué dato lo confirma o lo matiza? (fuente y periodo)</span><textarea rows="2"></textarea></label><h5 class="f-sec">2. Hipótesis</h5><label class="f-area"><span class="f-q">Si hacemos ______ en este lugar, esperamos que ______ en un plazo de ______</span><textarea rows="2"></textarea></label><h5 class="f-sec">3. Acción</h5><table class="f-table"><colgroup><col style="width:32%"><col style="width:18%"><col style="width:22%"><col style="width:12%"><col style="width:16%"></colgroup><thead><tr><th>Actividad</th><th>Responsable</th><th>Participación de la comunidad</th><th>Fecha</th><th>Costo o recurso</th></tr></thead><tbody><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr></tbody></table><button type="button" class="f-addrow">+ Agregar fila</button><h5 class="f-sec">4. Criterios de victoria temprana</h5><div class="f-opts block"><span class="f-optlist"><label class="f-opt"><input type="checkbox">Bajo costo</label><label class="f-opt"><input type="checkbox">Resultado visible en el corto plazo</label><label class="f-opt"><input type="checkbox">Responsable institucional claro</label><label class="f-opt"><input type="checkbox">La comunidad puede co-ejecutar</label><label class="f-opt"><input type="checkbox">Es medible</label><label class="f-opt"><input type="checkbox">Riesgo bajo para participantes</label></span></div><h5 class="f-sec">5. Objetivo y medición</h5><label class="f-area"><span class="f-q">Objetivo SMART</span><textarea rows="2"></textarea></label><table class="f-table"><colgroup><col style="width:26%"><col style="width:20%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:12%"><col style="width:12%"></colgroup><thead><tr><th>Indicador</th><th>Fuente (F-01, conteo, registro)</th><th>Valor antes</th><th>Fecha</th><th>Meta</th><th>Valor después</th><th>Fecha</th></tr></thead><tbody><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr></tbody></table><button type="button" class="f-addrow">+ Agregar fila</button><h5 class="f-sec">6. Decisión tras la medición (se toma en asamblea)</h5><div class="f-opts"><span class="f-optlist"><label class="f-opt"><input type="checkbox">Escalar</label><label class="f-opt"><input type="checkbox">Ajustar y repetir</label><label class="f-opt"><input type="checkbox">Descartar</label></span></div><label class="f-area"><span class="f-q">Aprendizajes</span><textarea rows="2"></textarea></label><div class="f-signs"><div><i></i><span>Equipo de diseño (comunidad)</span></div><div><i></i><span>Dependencia responsable</span></div><div><i></i><span>Equipo coordinador</span></div></div></div>
+        <div class="fmt-body"><div class="f-row"><label class="f-field" style="flex:2"><span>Territorio</span><input type="text"></label><label class="f-field" style="flex:1"><span>Fecha</span><input type="text"></label><label class="f-field" style="flex:1"><span>Folio de la intervención</span><input type="text"></label></div><div class="f-row"><label class="f-field" style="flex:1"><span>Nombre de la intervención</span><input type="text"></label></div><div class="f-row"><label class="f-field" style="flex:2"><span>Problemática que atiende (n.º en F-06)</span><input type="text"></label><label class="f-field" style="flex:2"><span>Lugar (zona o tramo)</span><input type="text"></label></div><h5 class="f-sec">1. Hallazgo y dato</h5><label class="f-area"><span class="f-q">¿Qué señaló la comunidad y con qué herramienta?</span><textarea rows="2"></textarea></label><label class="f-area"><span class="f-q">¿Qué dato lo confirma o lo matiza? (fuente y periodo)</span><textarea rows="2"></textarea></label><h5 class="f-sec">2. Hipótesis</h5><label class="f-area"><span class="f-q">Si hacemos ______ en este lugar, esperamos que ______ en un plazo de ______</span><textarea rows="2"></textarea></label><h5 class="f-sec">3. Acción</h5><table class="f-table"><colgroup><col style="width:32%"><col style="width:18%"><col style="width:22%"><col style="width:12%"><col style="width:16%"></colgroup><thead><tr><th>Actividad</th><th>Responsable</th><th>Participación de la comunidad</th><th>Fecha</th><th>Costo o recurso</th></tr></thead><tbody><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr></tbody></table><button type="button" class="f-addrow">+ Agregar fila</button><h5 class="f-sec">4. Criterios de victoria temprana</h5><div class="f-opts block"><span class="f-optlist"><label class="f-opt"><input type="checkbox">Bajo costo</label><label class="f-opt"><input type="checkbox">Resultado visible en el corto plazo</label><label class="f-opt"><input type="checkbox">Responsable institucional claro</label><label class="f-opt"><input type="checkbox">La comunidad puede co-ejecutar</label><label class="f-opt"><input type="checkbox">Es medible</label><label class="f-opt"><input type="checkbox">Riesgo bajo para participantes</label></span></div><h5 class="f-sec">5. Objetivo y medición</h5><label class="f-area"><span class="f-q">Objetivo SMART (específico, medible, alcanzable, relevante y con plazo definido)</span><textarea rows="2"></textarea></label><table class="f-table"><colgroup><col style="width:26%"><col style="width:20%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:12%"><col style="width:12%"></colgroup><thead><tr><th>Indicador</th><th>Fuente (F-01, conteo, registro)</th><th>Valor antes</th><th>Fecha</th><th>Meta</th><th>Valor después</th><th>Fecha</th></tr></thead><tbody><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr><tr class="blank"><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr></tbody></table><button type="button" class="f-addrow">+ Agregar fila</button><h5 class="f-sec">6. Decisión tras la medición (se toma en asamblea)</h5><div class="f-opts"><span class="f-optlist"><label class="f-opt"><input type="checkbox">Escalar</label><label class="f-opt"><input type="checkbox">Ajustar y repetir</label><label class="f-opt"><input type="checkbox">Descartar</label></span></div><label class="f-area"><span class="f-q">Aprendizajes</span><textarea rows="2"></textarea></label><div class="f-signs"><div><i></i><span>Equipo de diseño (comunidad)</span></div><div><i></i><span>Dependencia responsable</span></div><div><i></i><span>Equipo coordinador</span></div></div></div>
         <footer class="fmt-foot"><span>Coordinación de Seguridad · Gobierno de Jalisco</span><span>F-07 · Propuesta de formato sujeta a validación</span></footer>
       </article>
       <article class="fmt" id="sheet-f-08" data-title="F-08 · Matriz de responsabilidades (RACI)" hidden>
@@ -1962,6 +1951,7 @@ function openFieldTab(name, scroll) {
   }
 }
 document.querySelectorAll('.ftab-btn').forEach((b) => b.addEventListener('click', () => openFieldTab(b.dataset.ftab, false)));
+document.querySelectorAll('[data-go-section]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); goToPage({ section: a.dataset.goSection, anchor: a.dataset.goAnchor }); }));
 document.querySelectorAll('[data-goto-ftab]').forEach((b) => b.addEventListener('click', () => openFieldTab(b.dataset.gotoFtab, true)));
 
 // ============ SELECTORES (agenda, herramientas, leyes, semáforo) ============
@@ -2152,7 +2142,7 @@ Por plazo:
 
 1. Enfoque de laboratorio: experimentación controlada y aprendizaje continuo (ciclos iterativos, adaptación local, prueba y error supervisado, múltiples perspectivas).
 2. Ciencia de datos aplicada: SIG, observatorio de seguridad, sistema de alerta temprana y visualización interactiva.
-3. Gestión del cambio: sensibilización comunitaria, desarrollo de capacidades, proyectos de pequeña escala y mecanismos institucionales de permanencia (3 a 6 años).
+3. Gestión del cambio: recuperación de saberes comunitarios, desarrollo de capacidades, acupuntura urbana (proyectos de pequeña escala) y mecanismos institucionales de permanencia (3 a 6 años).
 
 Eje transversal: gobernanza participativa. La comunidad no solo opina: co-diseña, co-ejecuta y co-evalúa.`,
     related: ['laboratorio_social', 'tecnologia', 'gestion_cambio'], go: { section: 'pillars' }
@@ -2298,7 +2288,7 @@ El SEGULAB reconstruye confianza con hechos: cumple acuerdos pequeños y visible
     keywords: ['problemas identificados', 'problemas', 'justifican', 'justificación', 'desconexión institucional', 'información inaccesible', 'fragmentación de datos', 'educación ciudadana', 'por qué se necesita'],
     answer: `Seis problemas justifican el SEGULAB en Jalisco:
 
-1. Falta de educación ciudadana sobre seguridad y derechos.
+1. Educación ciudadana insuficiente sobre seguridad y derechos.
 2. Desconexión institucional: sin vínculo claro con las comunidades; la confianza en la Policía Estatal bajó a 56.5%.
 3. Información inaccesible sobre las acciones de seguridad.
 4. Cifra negra persistente: 92.2% de los delitos no se denunció o no tuvo carpeta.
@@ -2314,7 +2304,7 @@ El SEGULAB reconstruye confianza con hechos: cumple acuerdos pequeños y visible
     answer: `El ciclo SEGULAB tiene cinco fases; al terminar la quinta se reinicia con lo aprendido:
 
 1. Diagnóstico: comprensión integral del territorio. Entregable: Documento de Diagnóstico Participativo con matriz de problemáticas priorizadas (línea base).
-2. Diseño: co-creación de estrategias. Entregable: plan de intervención con objetivos SMART.
+2. Diseño: co-creación de estrategias. Entregable: plan de intervención con objetivos SMART (específicos, medibles, alcanzables, relevantes y con plazo definido).
 3. Implementación: acción en el territorio, empezando por victorias tempranas. Entregable: victorias documentadas y matriz RACI.
 4. Monitoreo y evaluación: durante todo el ciclo. Entregable: reportes de indicadores discutidos con la comunidad.
 5. Sostenibilidad: permanencia más allá de las administraciones. Entregable: Comité de Sostenibilidad Multiactor y convenios.
@@ -2346,7 +2336,7 @@ Herramientas: SIG, encuestas, grupos focales, mapeo participativo, caminatas de 
 1. Equipos de diseño mixtos: comunidad, funcionarios y especialistas, reflejando la diversidad del territorio.
 2. Capacitación en co-diseño (diseño participativo, pensamiento de diseño).
 3. Revisión de experiencias previas.
-4. Objetivos SMART y resultados esperados a corto, mediano y largo plazo.
+4. Objetivos SMART (específicos, medibles, alcanzables, relevantes y con plazo definido) y resultados esperados a corto, mediano y largo plazo.
 5. Generación colaborativa de ideas (lluvia de ideas estructurada, café mundial), minimizando jerarquías.
 
 Entregable: plan de intervención co-diseñado.`,
@@ -2374,7 +2364,7 @@ Entregable: victorias tempranas ejecutadas y documentadas, con matriz de respons
 
 Participan el equipo de monitoreo, un comité de seguimiento multiactor, monitores comunitarios e instituciones académicas. Los indicadores se alinean con MIDE Jalisco.
 
-Entregable: reportes periódicos discutidos con la comunidad.`,
+Entregable: reportes de indicadores (corte mensual y balance trimestral, periodicidad propuesta) discutidos con la comunidad.`,
     related: ['indicadores', 'ciclo', 'sostenibilidad'], go: { section: 'cycle' }
   },
   {
@@ -2475,7 +2465,7 @@ El manual detalla más indicadores (retención de participantes, cumplimiento de
     answer: `El Pilar 2 (ciencia de datos aplicada) integra cuatro componentes:
 
 1. Sistema de información georreferenciada (SIG): distribución espacial y temporal de los fenómenos delictivos.
-2. Observatorio de seguridad: integra y analiza datos de múltiples fuentes y genera reportes periódicos.
+2. Observatorio de seguridad: integra y analiza datos de múltiples fuentes y genera reportes mensuales y trimestrales (periodicidad propuesta).
 3. Sistema de alerta temprana: detecta cambios significativos en patrones delictivos o en la percepción.
 4. Visualización interactiva: facilita que instituciones y ciudadanos comprendan y se apropien de la información. El tablero SEGULABS es este sitio.
 
@@ -2511,8 +2501,8 @@ El cruce puede revelar, por ejemplo, que ciertos delitos se concentran donde fal
   },
   {
     id: 'observatorio', title: 'Observatorio y alerta temprana',
-    keywords: ['observatorio', 'observatorio de seguridad', 'alerta temprana', 'sistema de alerta', 'reportes periódicos'],
-    answer: `• Observatorio de seguridad: integra y analiza datos de múltiples fuentes (registros administrativos, encuestas de victimización, reportes ciudadanos) y genera reportes periódicos para decidir.
+    keywords: ['observatorio', 'observatorio de seguridad', 'alerta temprana', 'sistema de alerta', 'reportes periódicos', 'periodicidad', 'cada cuánto', 'reporte mensual', 'reporte trimestral'],
+    answer: `• Observatorio de seguridad: integra y analiza datos de múltiples fuentes (registros administrativos, encuestas de victimización, reportes ciudadanos) y genera reportes para decidir. Periodicidad propuesta, por validar con el Comité Directivo: corte mensual para la Mesa Técnica y balance trimestral para el Comité Directivo y la comunidad; el manual no fija una periodicidad.
 • Sistema de alerta temprana: identifica cambios significativos en los patrones delictivos o en la percepción de inseguridad, para responder con agilidad.
 
 Ambos son herramientas del SEGULAB, no el SEGULAB completo: el laboratorio además co-diseña, prueba y ajusta intervenciones con la comunidad.`,
@@ -2522,7 +2512,7 @@ Ambos son herramientas del SEGULAB, no el SEGULAB completo: el laboratorio adem�
   // ---------- Participación y capacitación ----------
   {
     id: 'participacion', title: 'Participación ciudadana',
-    keywords: ['participación|7', 'participación ciudadana', 'comunidad|4', 'vecinos|4', 'ciudadanía|5', 'sensibilización comunitaria', 'cómo participa la comunidad'],
+    keywords: ['participación|7', 'participación ciudadana', 'comunidad|4', 'vecinos|4', 'ciudadanía|5', 'sensibilización comunitaria', 'saberes comunitarios', 'recuperación de saberes', 'aprendizaje comunitario', 'cómo participa la comunidad'],
     answer: `La ciudadanía es co-productora en todas las fases del ciclo:
 
 • Diagnóstico: grupos focales, recorridos exploratorios, mapeo participativo y FODA comunitario.
@@ -2704,7 +2694,7 @@ Evidencia: examen de protocolos y carta de confidencialidad firmada.`,
 Cuatro estrategias del manual:
 1. Narrativas compartidas que muestren a cada actor qué gana con el nuevo enfoque.
 2. Desarrollo de capacidades en funcionarios y líderes comunitarios.
-3. Proyectos demostrativos de pequeña escala: la evidencia temprana reduce la resistencia por incertidumbre.
+3. Proyectos demostrativos de pequeña escala (acupuntura urbana): la evidencia temprana reduce la resistencia por incertidumbre.
 4. Institucionalización gradual, para que el cambio sobreviva al ciclo político.
 
 Tácticas prácticas: mapear quién siente que pierde, sumar primero a aliados internos, dar crédito público a la dependencia que cumple y aceptar que el cambio tiene avances y retrocesos.`,
@@ -2866,7 +2856,7 @@ Con una cifra negra de 92.2%, apoyarse solo en los registros oficiales dejaría 
   },
   {
     id: 'victorias_ruta', title: 'Ruta de victorias tempranas',
-    keywords: ['victoria temprana', 'victorias tempranas', 'prototipar', 'prototipo', 'prototipado', 'co-diseñar', 'codiseñar', 'bajo costo', 'alto impacto', 'intervenciones de bajo costo', 'proyectos de pequeña escala', 'cómo diseñar una intervención'],
+    keywords: ['victoria temprana', 'victorias tempranas', 'prototipar', 'prototipo', 'prototipado', 'co-diseñar', 'codiseñar', 'bajo costo', 'alto impacto', 'intervenciones de bajo costo', 'proyectos de pequeña escala', 'acupuntura urbana', 'acupuntura', 'cómo diseñar una intervención'],
     answer: `Una victoria temprana es una intervención de bajo costo y resultados visibles a corto plazo, que genera confianza. Ruta para co-diseñarla y prototiparla:
 
 1. Elegir el problema de la matriz priorizada con criterios: bajo costo, visible en el corto plazo (referencia: 90 días), responsable institucional claro, co-ejecutable por la comunidad, medible y de bajo riesgo.
